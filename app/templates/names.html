@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All names on me</title>
+</head>
+<body>
+<div class="row">
+	{{ stars|length }}
+</div>
+    <ul>
+{% for person in stars %}
+  <li><img src="http://st.kp.yandex.net/images/sm_actor/{{ person.id }}.jpg"><a href="#">{{ person.name }}</a><br /> {{ person.category }}</li>
+{% endfor %}
+</ul>
+</body>
+</html>

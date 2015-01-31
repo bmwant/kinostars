@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='javascript/jquery.cookie.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="column">
+
+        <h2 class="ui center aligned icon header">
+            <i class="circular emphasized users icon"></i>
+
+            <div class="content">not-Кинопоиск. Угадай знаменитость
+                <div class="sub header">Знаешь много актёров? Проверь свою память</div>
+            </div>
+        </h2>
+
+        <div class="ui stackable grid">
+            <div class="two column row">
+
+                <div class="column">
+
+                    <div class="ui stacked segment">
+                        <div>Случайная запись</div>
+
+                        <div class="ui image">
+                            <img width="180" height="285" src="{{ person.photo }}"/>
+                        </div>
+                        <a href="http://www.kinopoisk.ru/name/{{ person.id }}" target="_blank">{{ person.name }}</a>
+                        <div class="">
+                            В базе {{ g.persons_count }} знаменитостей
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui form stacked segment">
+
+                        <div class="field">
+                            <label>Ваше имя</label>
+
+                            <div class="ui left labeled icon input">
+                                <input type="text" placeholder="Введите имя"
+                                       name="nickname">
+                                <i class="user icon"></i>
+
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <label>Количество вариантов ответа</label>
+
+                            <div class="ui fluid selection dropdown">
+                                <div class="default text">Выберите из списка
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="variants">
+
+                                <div class="menu">
+                                    <div class="item" data-value="4">4</div>
+                                    <div class="item" data-value="5">5</div>
+                                    <div class="item" data-value="6">6</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <label>Время на ответ</label>
+
+                            <div class="ui fluid selection dropdown"
+                                 id="time-dropdown">
+                                <div class="default text">Выберите из списка
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="time">
+
+                                <div class="menu">
+                                    <div class="item" data-value="10">10 сек
+                                    </div>
+                                    <div class="item" data-value="15">15 сек
+                                    </div>
+                                    <div class="item" data-value="20">20 сек
+                                    </div>
+                                    <div class="item" data-value="123">Без
+                                        учёта времени
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <label>Количество неверных ответов</label>
+
+                            <div class="ui fluid selection dropdown">
+                                <div class="default text">Выберите из списка
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="errors">
+
+                                <div class="menu">
+                                    <div class="item" data-value="1">До первой
+                                        ошибки
+                                    </div>
+                                    <div class="item" data-value="3">3</div>
+                                    <div class="item" data-value="5">5</div>
+                                    <div class="item" data-value="0">
+                                        Разрешить ошибаться
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <label>В категориях</label>
+
+                            <div class="inline field">
+                                <div class="ui slider checkbox" data-name="actors" id="actors">
+                                    <input type="checkbox" name="actors"
+                                           checked="checked">
+                                    <label data-name="actors">Актёры</label>
+                                </div>
+                            </div>
+
+                            <div class="inline field">
+                                <div class="ui slider checkbox" data-name="actress" id="actress">
+                                    <input type="checkbox" name="actress">
+                                    <label data-name="actress">Актрисы</label>
+                                </div>
+                            </div>
+
+                            <div class="inline field" data-name="director">
+                                <div class="ui slider checkbox" id="director">
+                                    <input type="checkbox" name="director">
+                                    <label data-name="director">Режиссёры</label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="ui blue submit button" id="start-game">
+                            Начать игру
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block bottom_scripts %}
+    <script>
+
+        var actress = 1;
+        var actors = 1;
+        var director = 1;
+
+        function changeState(nm, state) {
+            if (nm == 'actors') {
+                actors = state;
+            } else if (nm == 'actress') {
+                actress = state;
+            } else if (nm == 'director') {
+                director = state;
+            }
+        }
+
+        var username = $.cookie("name");
+        if (username !== undefined) {
+            $('input[name="nickname"]').val(username);
+        }
+        var counter = 3;
+        var lastName;
+        $('.ui.selection.dropdown').dropdown();
+        $('.ui.slider').checkbox('enable').checkbox({
+            onEnable: function() {
+                counter++;
+                var nm = this[0].name;
+                changeState(nm, 1);
+            },
+            onDisable: function() {
+                counter--;
+                var nm = this[0].name;
+                changeState(nm, 0);
+                if(counter == 0) {
+                    $('#' + lastName).checkbox('enable');
+                } else {
+                    lastName = this[0].name;
+                }
+            }
+        });
+
+        var submit = function () {
+
+            var timeval = $('input[name="time"]').val();
+            var varval = $('input[name="variants"]').val();
+            var errval = $('input[name="errors"]').val();
+            var nameval = $('input[name="nickname"]').val();
+
+            $.cookie.raw = true;
+
+            $.cookie("time", timeval);
+            $.cookie("variants", varval);
+            $.cookie("errors", errval);
+            $.cookie("name", nameval);
+
+            $.cookie("actress", actress);
+            $.cookie("actors", actors);
+            $.cookie("director", director);
+
+            window.location.href = '/game';
+
+        };
+
+        //Main form validation
+        //Usage: $(".form').form(rules, settings);
+        $('.ui.form').form({
+                firstName: {
+                    identifier: 'nickname',
+                    rules: [{type: 'empty'}]
+                },
+                errors: {
+                    identifier: 'errors',
+                    rules: [{type: 'empty'}]
+                },
+                time: {
+                    identifier: 'time',
+                    rules: [{type: 'empty'}]
+                },
+                variants: {
+                    identifier: 'variants',
+                    rules: [{type: 'empty'}]
+                }
+            },
+            {
+                onSuccess: function() {
+                    submit();
+                }
+            })
+        ;
+    </script>
+{% endblock %}

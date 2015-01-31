@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+
+{% block left_side %}
+    <div class="left-panel">
+        <div class="left-panel-text">
+            <i class="triangle left icon"></i>Назад
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="column">
+
+        <h2 class="ui center aligned icon header">
+            <i class="circular emphasized info icon"></i>
+
+            <div class="content">Статистика
+                <div class="sub header">Игрок: <strong>{{ name }}</strong></div>
+            </div>
+        </h2>
+        {% if games %}
+        <table class="ui inverted blue table segment">
+            <tr>
+                <th>#</th>
+                <th>Правильных ответов</th>
+                <th>Неверных ответов</th>
+                <th>Время начала</th>
+            </tr>
+            {% for game in games %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ game.correct }}</td>
+                    <td>{{ game.failed }}</td>
+                    <td><strong>{{ game.start_time.strftime('%H:%M') }}</strong> {{ game.start_time.strftime('%x') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block bottom_scripts %}
+    <script>
+        $('.left-panel').click(function () {
+            window.location.href = '/';
+        });
+        $('.left-panel').hover( function() {
+            $('.site-footer').css('position', 'fixed');
+        }, function() {
+            $('.site-footer').css('position', 'static');
+        });
+    </script>
+{% endblock %}
