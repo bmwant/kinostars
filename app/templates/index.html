@@ -23,15 +23,35 @@
                 <div class="column">
 
                     <div class="ui stacked segment">
-                        <div>Случайная запись</div>
-
-                        <div class="ui image">
-                            <img width="180" height="285" src="{{ person.photo }}"/>
+                        <div class="ui card random-photo">
+                            <div class="image dimmable">
+                                <div class="ui dimmer">
+                                    <div class="content">
+                                        <div class="center">
+                                            <div class="ui inverted button">
+                                                <a href="http://www.kinopoisk.ru/name/{{ person.id }}" target="_blank">Профиль</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <img src="{{ person.photo }}"/>
+                            </div>
+                            <div class="content">
+                                <div class="header">
+                                    <a href="http://www.kinopoisk.ru/name/{{ person.id }}" target="_blank">{{ person.name }}</a>
+                                </div>
+                                <div class="meta">
+                                    <a class="group">Случайная запись</a>
+                                </div>
+                            </div>
+                            <div class="extra content">
+                                <a class="friends">
+                                    <i class="empty star icon"></i>
+                                    В базе {{ g.persons_count }} знаменитостей
+                                </a>
+                            </div>
                         </div>
-                        <a href="http://www.kinopoisk.ru/name/{{ person.id }}" target="_blank">{{ person.name }}</a>
-                        <div class="">
-                            В базе {{ g.persons_count }} знаменитостей
-                        </div>
+                        <div class="ui teal basic button" onclick="$('#links-sidebar').sidebar('toggle');"><i class="align justify icon"></i> Меню</div>
                     </div>
                 </div>
                 <div class="column">
@@ -40,10 +60,9 @@
                         <div class="field">
                             <label>Ваше имя</label>
 
-                            <div class="ui left labeled icon input">
+                            <div class="ui corner labeled input">
                                 <input type="text" placeholder="Введите имя"
                                        name="nickname">
-                                <i class="user icon"></i>
 
                                 <div class="ui corner label">
                                     <i class="icon asterisk"></i>
@@ -110,7 +129,7 @@
                                     </div>
                                     <div class="item" data-value="3">3</div>
                                     <div class="item" data-value="5">5</div>
-                                    <div class="item" data-value="0">
+                                    <div class="item" data-value="123">
                                         Разрешить ошибаться
                                     </div>
                                 </div>
@@ -122,23 +141,22 @@
                             <label>В категориях</label>
 
                             <div class="inline field">
-                                <div class="ui slider checkbox" data-name="actors" id="actors">
-                                    <input type="checkbox" name="actors"
-                                           checked="checked">
+                                <div class="ui toggle checkbox" data-name="actors" id="actors">
+                                    <input type="checkbox" name="actors" checked="checked">
                                     <label data-name="actors">Актёры</label>
                                 </div>
                             </div>
 
                             <div class="inline field">
-                                <div class="ui slider checkbox" data-name="actress" id="actress">
-                                    <input type="checkbox" name="actress">
+                                <div class="ui toggle checkbox" data-name="actress" id="actress">
+                                    <input type="checkbox" name="actress" checked="checked">
                                     <label data-name="actress">Актрисы</label>
                                 </div>
                             </div>
 
                             <div class="inline field" data-name="director">
-                                <div class="ui slider checkbox" id="director">
-                                    <input type="checkbox" name="director">
+                                <div class="ui toggle checkbox" id="director">
+                                    <input type="checkbox" name="director" checked="checked">
                                     <label data-name="director">Режиссёры</label>
                                 </div>
                             </div>
@@ -153,7 +171,30 @@
 
             </div>
         </div>
+
+        <div class="ui right sidebar inverted blue vertical menu" id="links-sidebar">
+            <div class="header item" id="sidebar-header">Привет, {{ g.username }}!</div>
+            <a class="item" href="http://kinopoisk.ru" target="_blank">
+                <i class="video icon"></i>
+                Кинопоиск
+            </a>
+            <a class="item" href="/records">
+                <i class="trophy icon"></i>
+                Рекорды
+            </a>
+            {% if g.authenticated %}
+                <a class="item" href="/statistic">
+                    <i class="info icon"></i>
+                    Статистика
+                </a>
+                <a class="item" href="/logout">
+                    <i class="sign out icon"></i>
+                    Выйти
+                </a>
+            {% endif %}
+        </div>
     </div>
+
 
 {% endblock %}
 
@@ -178,25 +219,31 @@
         if (username !== undefined) {
             $('input[name="nickname"]').val(username);
         }
-        var counter = 3;
+        var counter = 0;
         var lastName;
         $('.ui.selection.dropdown').dropdown();
-        $('.ui.slider').checkbox('enable').checkbox({
-            onEnable: function() {
+        $('.ui.dimmer').dimmer();
+        $(".ui.checkbox").checkbox({
+            onChecked: function() {
                 counter++;
                 var nm = this[0].name;
                 changeState(nm, 1);
             },
-            onDisable: function() {
+            onUnchecked: function() {
                 counter--;
                 var nm = this[0].name;
                 changeState(nm, 0);
+                console.log(counter);
                 if(counter == 0) {
-                    $('#' + lastName).checkbox('enable');
+                    $('#' + lastName).checkbox('check');
                 } else {
                     lastName = this[0].name;
                 }
             }
+        });
+
+        $(".image.dimmable").hover(function() {
+            $(".ui.dimmer").dimmer("toggle");
         });
 
         var submit = function () {

@@ -10,9 +10,11 @@ class Config(object):
 class ProductionConfig(Config):
     HOST = '0.0.0.0'
     PORT = 5050
+    DB_URI = 'mongodb://127.0.0.1:27017'
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
     HOST = '127.0.0.1'
     PORT = 3234
+    DB_URI = 'mongodb://94.45.76.62:27017'

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Панель управления{% endblock %}
+
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/component.css" />
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script src="/static/javascript/modernizr.custom.js"></script>
+    <script src="/static/javascript/classie.js"></script>
+{% endblock %}
+{% block content %}
+
+    <div class="column">
+
+        <h2 class="ui center aligned icon header">
+            <i class="circular emphasized info icon"></i>
+
+            <div class="content">Статистика
+                <div class="sub header"></div>
+            </div>
+        </h2>
+
+        <div class="la-anim-10"></div>
+		<!-- main container -->
+		<div class="container">
+
+			<div class="main">
+				<div id="la-buttons" class="column">
+					<button data-anim="la-anim-10">Corner indicator</button>
+				</div>
+			</div><!-- /main -->
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom_scripts %}
+    {{ super() }}
+    <script>
+    var inProgress = false;
+
+    			Array.prototype.slice.call( document.querySelectorAll( '#la-buttons > button' ) ).forEach( function( el, i ) {
+				var anim = el.getAttribute( 'data-anim' ),
+					animEl = document.querySelector( '.' + anim );
+
+				el.addEventListener( 'click', function() {
+					if( inProgress ) return false;
+					inProgress = true;
+					classie.add( animEl, 'la-animate' );
+
+
+					setTimeout( function() {
+						classie.remove( animEl, 'la-animate' );
+						inProgress = false;
+					}, 6000 );
+				} );
+			} );
+    </script>
+{% endblock %}
