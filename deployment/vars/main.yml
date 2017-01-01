@@ -1,0 +1,8 @@
+repo_url: git@github.com:bmwant/kinostars.git
+project_root: /data/projects/kinostars
+project_version: origin/master
+app_name: kinostars
+app_run_port: 3234
+app_entrypoint: run.py
+domain_name: kinostars.bmwlog.pp.ua
+username: freebsd

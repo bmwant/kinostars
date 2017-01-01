@@ -1,11 +1,10 @@
 [uwsgi]
-chdir=/data/projects/kinostars
-wsgi-file=run.py
+chdir={{ project_root }}
+wsgi-file={{ app_entrypoint }}
 callable=app
 env=/data/projects/kinostars/venv
-socket=127.0.0.1:6783
+socket=127.0.0.1:{{ app_run_port }}
 processes=4
 threads=2
 master=True
 chmod-socket=666
-

@@ -1,0 +1,71 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - include_vars: "vars/main.yml"
+
+    - name: pull latest repository version
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_root }}"
+        version: "{{ project_version }}"
+        accept_hostkey: true
+
+    - name: install npm requirements
+      shell: "npm install"
+      args:
+        chdir: "{{ project_root }}"
+
+    - name: render nginx config
+      template:
+        src: "templates/nginx_kinostars.conf.j2"
+        dest: "/usr/local/etc/nginx/sites-enabled/{{ app_name }}.conf"
+      notify: nginx reload
+      become: true
+
+    - name: render supervisor config
+    - name: render uwsgi config
+      template:
+        src: "templates/forever_sqdev.json.j2"
+        dest: "{{ project_root }}/deployment/forever_sqdev.json"
+
+    - name: render rc.d config
+      template:
+        src: "templates/rc.d_sqdev.j2"
+        dest: "/usr/local/etc/rc.d/{{ app_name }}"
+        mode: 0555
+      become: true
+
+    - name: reload service
+      service:
+        name: "{{ app_name }}"
+        state: restarted
+      ignore_errors: true
+      register: reload_result
+
+    - name: start app for the first time
+      service:
+        name: "{{ app_name }}"
+        state: started
+      when: reload_result|failed
+
+    - name: add app to autostart
+      lineinfile:
+        dest: /etc/rc.conf
+        line: 'sqdev_enable="YES"'
+      become: true
+
+
+  handlers:
+
+    - name: nginx reload
+      shell: "nginx -t && nginx -s reload"
+      become: true
+
+    - name: forever reload
+      shell: "forever restart {{ app_name }}"
+
+    - name: service reload
+      shell: "service {{ app_name }} restart"
+      become: true

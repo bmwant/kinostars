@@ -1,11 +1,11 @@
-[program:kinostars]
+[program:{{ app_name }}]
 command=/data/projects/kinostars/venv/bin/uwsgi --ini uwsgi_kinostars.ini
-directory=/data/projects/kinostars
-user=bmwant
+directory={{ project_root }}
+user={{ username }}
 autostart=true
 autorestart=true
 redirect_stderr=true
-stdout_logfile=/var/log/kinostars.supervisor.stdout
+stdout_logfile=/var/log/{{ app_name }}.supervisor.stdout
 stopsignal=INT
 stopwaitsecs=5
 killasgroup=true

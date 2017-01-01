@@ -106,7 +106,7 @@ def statistic():
     """
     Get statistic for player games
     """
-    player_id = request.cookies.get('player_id')
+    player_id = request.cookies['player_id']
     player = db.players.find_one({'_id': ObjectId(player_id)})
     games = [db.games.find_one({'_id': game_id})
              for game_id in player['games']]
@@ -127,14 +127,19 @@ def records():
 @app.route('/logout')
 def logout():
     resp = make_response(redirect(url_for('index')))
-    resp.set_cookie('time', '', expires=0)
-    resp.set_cookie('variants', '', expires=0)
-    resp.set_cookie('name', '', expires=0)
-    resp.set_cookie('player_id', '', expires=0)
-    resp.set_cookie('actors', '', expires=0)
-    resp.set_cookie('actress', '', expires=0)
-    resp.set_cookie('director', '', expires=0)
-    resp.set_cookie('errors', '', expires=0)
+    cookies_data = (
+        'time',
+        'variants',
+        'name',
+        'player_id',
+        'actors',
+        'actress',
+        'director',
+        'errors',
+    )
+    for cookie in cookies_data:
+        resp.set_cookie(cookie, '', expires=0)
+
     return resp
 
 
@@ -167,7 +172,7 @@ def game():
         if director == u'1':
             cats.append(u'Режиссеры')
 
-        #Generate game and store it in redis for current user
+        # Generate game and store it in redis for current user
         generate_game(player_id,
                       category=cats,
                       variants=int(request.cookies['variants']))
@@ -219,7 +224,7 @@ def game():
             cause = 'end'
 
         if cause:
-            #Game over
+            # Game over
             return json.dumps({
                 'statistic': {
                     'correct': current_game['correct'],
@@ -252,5 +257,4 @@ def game():
                                'right': get_answer(player_id, current_level),
                                'yours': answer
                            },
-                           'over': False
-        })
+                           'over': False})
