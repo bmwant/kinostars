@@ -15,6 +15,6 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    HOST = '127.0.0.1'
+    HOST = '0.0.0.0'
     PORT = 3234
-    DB_URI = 'mongodb://94.45.76.62:27017'
+    DB_URI = 'mongodb://127.0.0.1:27017'

@@ -23,6 +23,7 @@
                 <div class="column">
 
                     <div class="ui stacked segment">
+                        {% if person %}
                         <div class="ui card random-photo">
                             <div class="image dimmable">
                                 <div class="ui dimmer">
@@ -47,10 +48,11 @@
                             <div class="extra content">
                                 <a class="friends">
                                     <i class="empty star icon"></i>
-                                    В базе {{ g.persons_count }} знаменитостей
+                                    В базе {{ g.db.count }} знаменитостей
                                 </a>
                             </div>
                         </div>
+                        {% endif %}
                         <div class="ui teal basic button" onclick="$('#links-sidebar').sidebar('toggle');"><i class="align justify icon"></i> Меню</div>
                     </div>
                 </div>
@@ -162,10 +164,15 @@
                             </div>
 
                         </div>
-
-                        <div class="ui blue submit button" id="start-game">
-                            Начать игру
+                        {% if g.db.can_play %}
+                            <div class="ui blue submit button" id="start-game">
+                                Начать игру
+                            </div>
+                        {% else %}
+                            <div class="ui disabled button">
+                            Недостаточно данных в базе
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 

@@ -19,7 +19,8 @@ body, html {
 }
 
 .site-footer {
-    height: 20px; /* Define height of the footer */
+    height: 40px; /* Define height of the footer */
+    padding: 10px;
     width: 100%; /* As wide as it's allowed */
     background: #6ECFF5;
     color: #ffffff;

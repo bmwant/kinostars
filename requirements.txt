@@ -5,4 +5,5 @@ Werkzeug==0.9.4
 beautifulsoup4==4.3.2
 itsdangerous==0.23
 redis==2.9.1
-twill==0.9
+twill==0.9.1
+pymongo==3.4.0

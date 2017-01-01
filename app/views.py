@@ -11,6 +11,7 @@ from bson.objectid import ObjectId
 from app import application as app
 from app import kinopoisk_agent, db, redis_db
 from auxiliary import requires_auth
+from models import GameDAO
 
 
 @app.route('/all')
@@ -29,17 +30,15 @@ def admin_panel():
 @app.before_request
 def load_all_persons():
     # todo: add validations for invalid records in cookies
-    g.authenticated = True if 'player_id' in request.cookies else False
-    g.username = request.cookies['name'] \
-        if 'name' in request.cookies else u'Гость'
-    g.persons_count = db.stars.find().count()
+    g.authenticated = 'player_id' in request.cookies
+    g.username = request.cookies.get('name', u'Гость')
     g.current_year = datetime.datetime.now().year
+    g.db = GameDAO()
 
 
 @app.route('/')
 def index():
-    random_record = random.randint(1, g.persons_count)
-    person = db.stars.find().limit(-1).skip(random_record).next()
+    person = g.db.get_random_star()
     return render_template('index.html', person=person)
 
 
@@ -107,7 +106,7 @@ def statistic():
     """
     Get statistic for player games
     """
-    player_id = request.cookies['player_id']
+    player_id = request.cookies.get('player_id')
     player = db.players.find_one({'_id': ObjectId(player_id)})
     games = [db.games.find_one({'_id': game_id})
              for game_id in player['games']]
@@ -118,22 +117,10 @@ def statistic():
 
 @app.route('/records')
 def records():
-    player_id = request.cookies['player_id']
-    from pymongo import DESCENDING
-    games = db.games.find().limit(10).sort('correct', DESCENDING)
-    best_games = []
-    for game in games:
-        player = db.players.find_one({'_id': ObjectId(game['player_id'])})
-        best_games.append(
-            {
-                'correct': game['correct'],
-                'failed': game['failed'],
-                'player': player['name'],
-                'start_time': game['start_time']
-            }
-        )
+    player_id = request.cookies.get('player_id')
+    top_games = g.db.get_top_games()
     return render_template('records.html',
-                           games=best_games,
+                           games=top_games,
                            player_id=player_id)
 
 
