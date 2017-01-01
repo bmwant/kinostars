@@ -7,18 +7,17 @@ application = Flask(__name__)
 
 application.config.from_object(DevelopmentConfig)
 
-#initialize db here. You already can use config
+# Initialize db here. You already can use config
 from redis import Redis
 redis_db = Redis()
 
 from pymongo import MongoClient
-mongo_client = MongoClient(application.config['DB_URI'] )
+mongo_client = MongoClient(application.config['DB_URI'])
 db = mongo_client.game_db
 
-#register blueprints here
+# Register blueprints here
 from grabber.kinopoisk_grab import kinopoisk_agent
 application.register_blueprint(kinopoisk_agent)
 
-
-#import views here
+# Import views here
 import app.views

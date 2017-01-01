@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Most Wanted'
+
+import json
+import random
+import datetime
+
 from flask import render_template, abort, request, g, redirect, \
     session, make_response, url_for
-import random
-import json
 from bson.objectid import ObjectId
-import pprint
-import datetime
 from app import application as app
 from app import kinopoisk_agent, db, redis_db
-
-
 from auxiliary import requires_auth
 
 
@@ -29,9 +28,10 @@ def admin_panel():
 
 @app.before_request
 def load_all_persons():
-    #todo: add validations for invalid records in cookies
+    # todo: add validations for invalid records in cookies
     g.authenticated = True if 'player_id' in request.cookies else False
-    g.username = request.cookies['name'] if 'name' in request.cookies else u'Гость'
+    g.username = request.cookies['name'] \
+        if 'name' in request.cookies else u'Гость'
     g.persons_count = db.stars.find().count()
     g.current_year = datetime.datetime.now().year
 
@@ -71,7 +71,7 @@ def get_level(player_id, level):  # unicode, int
     all_persons = list(db.stars.find({'category': correct_person['category']}))
     random.shuffle(all_persons)
     persons = all_persons[:variants]
-    if not correct_person in persons:
+    if correct_person not in persons:
         position = random.randint(1, variants)
         persons[position-1] = correct_person
 
@@ -111,7 +111,7 @@ def statistic():
     player = db.players.find_one({'_id': ObjectId(player_id)})
     games = [db.games.find_one({'_id': game_id})
              for game_id in player['games']]
-    #todo: select sorted by date and limit to 20 records
+    # todo: select sorted by date and limit to 20 records
     games = games[:20]
     return render_template('statistic.html', games=games, name=player['name'])
 
@@ -132,7 +132,9 @@ def records():
                 'start_time': game['start_time']
             }
         )
-    return render_template('records.html', games=best_games, player_id=player_id)
+    return render_template('records.html',
+                           games=best_games,
+                           player_id=player_id)
 
 
 @app.route('/logout')
@@ -160,11 +162,11 @@ def end():
 def game():
     if request.method == 'GET':
         if 'player_id' in request.cookies:
-            #Player wants to play another game and we know him
+            # Player wants to play another game and we know him
             player_id = request.cookies['player_id']
             player = db.players.find_one({'player_id': player_id})
         else:
-            #It is new player, create account for him
+            # It is new player, create account for him
             player_id = db.players.insert({'name': g.username, 'games': []})
 
         actors = request.cookies['actors']
@@ -179,7 +181,9 @@ def game():
             cats.append(u'Режиссеры')
 
         #Generate game and store it in redis for current user
-        generate_game(player_id, category=cats, variants=int(request.cookies['variants']))
+        generate_game(player_id,
+                      category=cats,
+                      variants=int(request.cookies['variants']))
         level_data = get_level(player_id, 1)
 
         # and create mongo db session for this game
@@ -191,11 +195,12 @@ def game():
             'player_id': player_id
         }
         game_id = db.games.insert(new_game)
-        db.players.update({'_id': ObjectId(player_id)}, {'$addToSet': {'games': game_id}})
+        db.players.update({'_id': ObjectId(player_id)},
+                          {'$addToSet': {'games': game_id}})
         session['game_id'] = str(game_id)
 
         print('Starting game for player %s %s' % (player_id, type(player_id)))
-        #Return page with first level
+        # Return page with first level
         resp = make_response(render_template('game.html', **level_data))
         resp.set_cookie('player_id', str(player_id), max_age=60*60*24*12*5)
         return resp
@@ -243,7 +248,6 @@ def game():
             current_game['level'] += 1  # go to the next level
 
         games.save(current_game)  # write changes back to mongodb
-
 
         persons = [{
             'id': person['id'],
