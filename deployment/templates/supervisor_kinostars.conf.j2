@@ -1,5 +1,5 @@
 [program:{{ app_name }}]
-command=/data/projects/kinostars/venv/bin/uwsgi --ini uwsgi_kinostars.ini
+command={{ virtualenv_root }}/bin/uwsgi --ini uwsgi_config.ini
 directory={{ project_root }}
 user={{ username }}
 autostart=true

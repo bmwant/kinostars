@@ -1,5 +1,6 @@
 repo_url: git@github.com:bmwant/kinostars.git
 project_root: /data/projects/kinostars
+virtualenv_root: /data/virtualenvs/kinostars
 project_version: origin/master
 app_name: kinostars
 app_run_port: 3234

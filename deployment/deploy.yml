@@ -12,10 +12,26 @@
         version: "{{ project_version }}"
         accept_hostkey: true
 
-    - name: install npm requirements
-      shell: "npm install"
+    - name: create virtual envrionment if not exists
+      shell: "virtualenv {{ virtualenv_root }}"
+      args:
+        creates: "{{ virtualenv_root }}"
+
+    - name: install dependencies
+      shell: "{{ virtualenv_root }}/bin/pip install -r requirements.txt"
       args:
         chdir: "{{ project_root }}"
+
+    - name: render uwsgi config
+      template:
+        src: "templates/uwsgi_kinostars.ini.j2"
+        dest: "{{ project_root }}/uwsgi_config.ini"
+
+    - name: render supervisor config
+      template:
+        src: "templates/supervisor_kinostars.conf.j2"
+        dest: "/usr/local/etc/supervisor/{{ app_name }}.conf"
+      become: true
 
     - name: render nginx config
       template:
@@ -24,47 +40,15 @@
       notify: nginx reload
       become: true
 
-    - name: render supervisor config
-    - name: render uwsgi config
-      template:
-        src: "templates/forever_sqdev.json.j2"
-        dest: "{{ project_root }}/deployment/forever_sqdev.json"
-
-    - name: render rc.d config
-      template:
-        src: "templates/rc.d_sqdev.j2"
-        dest: "/usr/local/etc/rc.d/{{ app_name }}"
-        mode: 0555
-      become: true
-
-    - name: reload service
-      service:
-        name: "{{ app_name }}"
-        state: restarted
-      ignore_errors: true
-      register: reload_result
-
-    - name: start app for the first time
-      service:
-        name: "{{ app_name }}"
-        state: started
-      when: reload_result|failed
-
-    - name: add app to autostart
-      lineinfile:
-        dest: /etc/rc.conf
-        line: 'sqdev_enable="YES"'
-      become: true
-
-
   handlers:
+
+    - name: supervisor restart app
+      shell: "sudo supervisorctl restart {{ app_name }}"
+      become: true
 
     - name: nginx reload
       shell: "nginx -t && nginx -s reload"
       become: true
-
-    - name: forever reload
-      shell: "forever restart {{ app_name }}"
 
     - name: service reload
       shell: "service {{ app_name }} restart"
