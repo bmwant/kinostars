@@ -5,8 +5,8 @@ import json
 import random
 import datetime
 
-from flask import render_template, abort, request, g, redirect, \
-    session, make_response, url_for
+from flask import (render_template, abort, request, g, redirect, session,
+                   make_response, url_for)
 from bson.objectid import ObjectId
 from app import application as app
 from app import kinopoisk_agent, db, redis_db
@@ -17,7 +17,7 @@ from models import GameDAO
 @app.route('/all')
 @requires_auth
 def saved_stars():
-    stars = list(db.stars.find())
+    stars = g.db.get_all_stars()
     return render_template('names.html', stars=stars)
 
 

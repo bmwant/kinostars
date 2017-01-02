@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Most Wanted'
+import re
+import json
+import uuid
+import random
+import datetime
+
 from flask import (Blueprint, render_template, abort, request, g, redirect,
                    make_response)
 from twill.commands import go, show, clear_cookies, fv, submit
 from bs4 import BeautifulSoup
-import re
-import random
-import json
-import uuid
 from bson.objectid import ObjectId
-import datetime
 
 
 kinopoisk_agent = Blueprint('kinopoisk_agent', __name__,
@@ -22,6 +22,8 @@ from app.auxiliary import requires_auth
 @kinopoisk_agent.route('/grab_photos')
 @requires_auth
 def grab_photos():
+    import time
+    time.sleep(4)
     return 'Ok'
 
 
