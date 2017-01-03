@@ -1,7 +1,5 @@
 TESTING = False
 SECRET_KEY = 'some-radnom-conbimation'
-ADMIN_USER = 'admin'
-ADMIN_PASS = 'nevermind'
 DEBUG = True
 HOST = '0.0.0.0'
 PORT = 3234

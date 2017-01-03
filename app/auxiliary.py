@@ -1,8 +1,17 @@
-__author__ = 'Most Wanted'
+import os
+import yaml
 
 from functools import wraps
 from flask import request, Response
 from app import application as app
+
+
+def load_credentials():
+    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
+    creds_file = os.path.join(root_dir, 'creds.yml')
+    with open(creds_file) as f:
+        creds = yaml.load(f.read())
+    app.config.update(creds)
 
 
 def check_auth(username, password):
@@ -18,10 +27,9 @@ def authenticate():
     """
     Sends a 401 response that enables basic auth
     """
-    return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    return Response('Could not verify your access level for that URL.\n'
+                    'You have to login with proper credentials', 401,
+                    {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 def requires_auth(f):

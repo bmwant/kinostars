@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Most Wanted'
-
 import json
 import random
 import datetime
@@ -8,8 +6,8 @@ import datetime
 from flask import (render_template, abort, request, g, redirect, session,
                    make_response, url_for)
 from bson.objectid import ObjectId
-from app import application as app
 from app import kinopoisk_agent, db, redis_db
+from app import application as app
 from auxiliary import requires_auth
 from models import GameDAO
 
@@ -47,7 +45,6 @@ def generate_game(player_id, category, variants=6):
     Generate whole game from mongo and write it to redis
     """
     persons = list(db.stars.find({'category': {'$in': category}}))
-    print(persons)
     total_games = len(persons)
     random.shuffle(persons)
     game = [p['id'] for p in persons]
@@ -62,8 +59,6 @@ def get_level(player_id, level):  # unicode, int
     if level >= total_games:
         return None
     rr = json.loads(redis_db.hget(player_id, 'game'))
-    print(rr)
-    print(level-1)
     level_person = rr[level-1]
     correct_person = db.stars.find_one({'id': level_person})
 
@@ -76,7 +71,7 @@ def get_level(player_id, level):  # unicode, int
 
     photo = correct_person['photo']
     category = correct_person['category']
-    #random.shuffle(persons)
+    # random.shuffle(persons)
     return {
         'photo': photo,
         'persons': persons,
@@ -191,7 +186,7 @@ def game():
                           {'$addToSet': {'games': game_id}})
         session['game_id'] = str(game_id)
 
-        print('Starting game for player %s %s' % (player_id, type(player_id)))
+        app.logger.info('Starting game for player {}'.format(player_id))
         # Return page with first level
         resp = make_response(render_template('game.html', **level_data))
         resp.set_cookie('player_id', str(player_id), max_age=60*60*24*12*5)
@@ -205,11 +200,11 @@ def game():
         current_game = games.find_one({'_id': ObjectId(game_id)})
 
         player_id = current_game['player_id']
-        print('Resuming game for player %s %s' % (player_id, type(player_id)))
+        app.logger.info('Resuming game for player {}'.format(player_id))
         answer = request.form['id']
         current_level = int(current_game['level'])
 
-        if check_answer(player_id, current_level, answer):  #current_game['level_persons'][index]['id'] == right_person['id']:
+        if check_answer(player_id, current_level, answer):
             # correct answer
             current_game['correct'] += 1
         else:

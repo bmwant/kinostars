@@ -26,5 +26,8 @@ application.logger.handlers[0].setFormatter(formatter)
 from grabber.kinopoisk_grab import kinopoisk_agent
 application.register_blueprint(kinopoisk_agent)
 
+from auxiliary import load_credentials
+load_credentials()
+
 # Import views here
 import app.views
