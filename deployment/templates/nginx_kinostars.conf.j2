@@ -10,12 +10,13 @@ server {
     root {{ project_root }};
     
     location / {
-      try_files $uri @proxy_to_app;
+        root {{ project_root }}/app;
+        try_files $uri $uri/ @proxy_to_app;
     }
     
     location @proxy_to_app {
-      uwsgi_pass {{ app_name }};
-      include /usr/local/etc/nginx/uwsgi_params;
+        uwsgi_pass {{ app_name }};
+        include /usr/local/etc/nginx/uwsgi_params;
     }
 }
 
