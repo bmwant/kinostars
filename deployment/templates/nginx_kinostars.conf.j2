@@ -8,16 +8,12 @@ server {
     charset utf-8;
 
     root {{ project_root }};
-    
-    location / {
-        try_files @proxy_to_app;
-    }
 
     location /static {
         root {{ project_root }}/app;
     }
     
-    location @proxy_to_app {
+    location / {
         uwsgi_pass {{ app_name }};
         include /usr/local/etc/nginx/uwsgi_params;
     }

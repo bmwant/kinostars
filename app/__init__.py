@@ -13,8 +13,9 @@ application.config.from_object(config)
 redis_db = Redis(host=application.config['REDIS_HOST'],
                  port=application.config['REDIS_PORT'])
 
-
-mongo_client = MongoClient(application.config['MONGO_URI'])
+# Do not connect immediately to use fork environment
+mongo_client = MongoClient(application.config['MONGO_URI'],
+                           connect=False)
 db = mongo_client.game_db
 
 formatter = logging.Formatter('%(asctime)s :: line %(lineno)d, %(module)s '

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import sys
 import time
 
 from flask import (Blueprint, render_template, abort, request, g, redirect,
@@ -30,6 +31,7 @@ def grab_to_mongo():
     write them to mongo database
     """
     app.logger.debug('Initializing web driver')
+    sys.path.append('/usr/local/bin')
     driver = webdriver.PhantomJS()
     driver.get('http://kinopoisk.ru/login/')
     driver.switch_to_frame('kp2-authapi-iframe')
