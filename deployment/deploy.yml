@@ -26,11 +26,13 @@
       template:
         src: "templates/uwsgi_kinostars.ini.j2"
         dest: "{{ project_root }}/uwsgi_config.ini"
+      notify: supervisor restart app
 
     - name: render supervisor config
       template:
         src: "templates/supervisor_kinostars.conf.j2"
         dest: "/usr/local/etc/supervisor/{{ app_name }}.conf"
+      notify: supervisor restart app
       become: true
 
     - name: render nginx config
@@ -48,8 +50,4 @@
 
     - name: nginx reload
       shell: "nginx -t && nginx -s reload"
-      become: true
-
-    - name: service reload
-      shell: "service {{ app_name }} restart"
       become: true
