@@ -70,16 +70,31 @@
             if (inProgress) return false;
             inProgress = true;
             classie.add(animEl, 'la-animate');
-            $.get('/grab', function(data) {
-                $('#info-message').show();
-                classie.remove(animEl, 'la-animate');
-                inProgress = false;
-            }).fail(function() {
-                classie.remove(animEl, 'la-animate');
-                inProgress = false;
-                $('#error-message').show();
+            $.ajax({
+                method: 'GET',
+                url: '/grab',
+                timeout: 1000 //in milliseconds
+            }).always(function() {
+                console.info('Initiated database update');
             });
         });
+
+        setInterval(function() {
+            if(inProgress) {
+                var request = $.get('/check_state', function(data) {
+                    if(!data.updating) {
+                        inProgress = false;
+                        classie.remove(animEl, 'la-animate');
+                    }
+                });
+
+                request.fail(function() {
+                    inProgress = false;
+                    classie.remove(animEl, 'la-animate');
+                    $('#error-message').show();
+                });
+            }
+        }, 3500);
 
         $('.message .close').on('click', function() {
             $(this).closest('.message').transition('fade');

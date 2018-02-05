@@ -30,7 +30,11 @@ def check_updating_state():
 
 
 def _change_update_status(status):
-    result = db.test.update_one({'type': 'update'}, {'$set': {'value': bool(status)}}, upsert=True)
+    result = db.statuses.update_one(
+        {'type': 'update'},
+        {'$set': {'value': bool(status)}},
+        upsert=True
+    )
     return result.modified_count
 
 
@@ -114,7 +118,7 @@ def grab_to_mongo():
                     'photo': 'http://st.kp.yandex.net/images/'
                              'actor_iphone/iphone360_%s.jpg' % person_id
                 }
-                new_person_id = db.stars.insert(new_person)
+                db.stars.insert(new_person)
     _change_update_status(False)
     app.logger.info('Database updated')
     return 'Ok'
