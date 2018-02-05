@@ -1,13 +1,7 @@
 ---
 
-- name: pull latest repository version
-  git:
-    repo: "{{ repo_url }}"
-    dest: "{{ project_root }}"
-    version: "{{ project_version }}"
-    accept_hostkey: true
-
-- name: create virtual envrionment if not exists
-  shell: "virtualenv {{ virtualenv_root }}"
-  args:
-    creates: "{{ virtualenv_root }}"
+- name: download phantomjs
+  get_url:
+    url: "https://github.com/ariya/phantomjs/releases/download/2.1.3/phantomjs"
+    dest: "/usr/local/bin/phantomjs"
+    mode: 0755
