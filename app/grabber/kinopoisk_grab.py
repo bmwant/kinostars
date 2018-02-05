@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import json
 import time
 
 from flask import Blueprint
@@ -23,7 +24,14 @@ def grab_photos():
 
 @kinopoisk_agent.route('/check_state')
 def check_updating_state():
-    pass
+    update_status = db.statuses.find_one({'type': 'update'})
+    updating = update_status is not None and update_status.get('value')
+    return json.dumps({'updating': updating})
+
+
+def _change_update_status(status):
+    result = db.test.update_one({'type': 'update'}, {'$set': {'value': bool(status)}}, upsert=True)
+    return result.modified_count
 
 
 @kinopoisk_agent.route('/grab')
@@ -35,6 +43,7 @@ def grab_to_mongo():
     """
     app.logger.debug('Initializing web driver')
     driver = webdriver.PhantomJS()
+    _change_update_status(True)
     driver.get('http://kinopoisk.ru/login/')
     driver.switch_to_frame('kp2-authapi-iframe')
     time.sleep(1)
@@ -106,5 +115,6 @@ def grab_to_mongo():
                              'actor_iphone/iphone360_%s.jpg' % person_id
                 }
                 new_person_id = db.stars.insert(new_person)
+    _change_update_status(False)
     app.logger.info('Database updated')
     return 'Ok'
