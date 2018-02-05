@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
-import os
 import time
 
-from flask import (Blueprint, render_template, abort, request, g, redirect,
-                   make_response)
+from flask import Blueprint
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
@@ -17,15 +15,15 @@ from app.auxiliary import requires_auth
 from app import application as app
 
 
-def update_path():
-    path = os.environ['PATH']
-    os.environ['PATH'] = path + ':/usr/local/bin'
-
-
 @kinopoisk_agent.route('/test')
 @requires_auth
 def grab_photos():
     return 'Ok'
+
+
+@kinopoisk_agent.route('/check_state')
+def check_updating_state():
+    pass
 
 
 @kinopoisk_agent.route('/grab')
@@ -36,7 +34,6 @@ def grab_to_mongo():
     write them to mongo database
     """
     app.logger.debug('Initializing web driver')
-    update_path()
     driver = webdriver.PhantomJS()
     driver.get('http://kinopoisk.ru/login/')
     driver.switch_to_frame('kp2-authapi-iframe')
