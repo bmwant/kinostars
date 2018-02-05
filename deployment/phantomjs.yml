@@ -1,0 +1,13 @@
+---
+
+- name: pull latest repository version
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ project_root }}"
+    version: "{{ project_version }}"
+    accept_hostkey: true
+
+- name: create virtual envrionment if not exists
+  shell: "virtualenv {{ virtualenv_root }}"
+  args:
+    creates: "{{ virtualenv_root }}"

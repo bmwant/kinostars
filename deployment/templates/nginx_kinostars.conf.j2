@@ -15,7 +15,7 @@ server {
     
     location / {
         uwsgi_pass {{ app_name }};
-        include /usr/local/etc/nginx/uwsgi_params;
+        include /etc/nginx/uwsgi_params;
     }
 }
 

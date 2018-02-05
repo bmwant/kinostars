@@ -1,9 +1,12 @@
 ---
+
 - hosts: all
   gather_facts: no
 
   tasks:
     - include_vars: "vars/main.yml"
+
+    - include: "phantomjs.yml"
 
     - name: pull latest repository version
       git:
@@ -31,14 +34,14 @@
     - name: render supervisor config
       template:
         src: "templates/supervisor_kinostars.conf.j2"
-        dest: "/usr/local/etc/supervisor/{{ app_name }}.conf"
+        dest: "/etc/supervisor/conf.d/{{ app_name }}.conf"
       notify: supervisor restart app
       become: true
 
     - name: render nginx config
       template:
         src: "templates/nginx_kinostars.conf.j2"
-        dest: "/usr/local/etc/nginx/sites-enabled/{{ app_name }}.conf"
+        dest: "/etc/nginx/conf.d/{{ app_name }}.conf"
       notify: nginx reload
       become: true
 

@@ -6,4 +6,4 @@ app_name: kinostars
 app_run_port: 3234
 app_entrypoint: run.py
 domain_name: kinostars.bmwlog.pp.ua
-username: freebsd
+username: centos
