@@ -6,7 +6,7 @@
   tasks:
     - include_vars: "vars/main.yml"
 
-    - include: "phantomjs.yml"
+    - include: "phantomjs_check.yml"
 
     - name: pull latest repository version
       git:

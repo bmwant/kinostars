@@ -1,8 +1,10 @@
 ---
 
-- name: download phantomjs
-  get_url:
-    url: "https://github.com/ariya/phantomjs/releases/download/2.1.3/phantomjs"
-    dest: "/usr/local/bin/phantomjs"
-    mode: 0755
-  become: true
+- name: check phantomjs executable is present
+  shell: "which phantomjs"
+  register: result
+  ignore_errors: true
+
+- fail:
+    msg: "PhantomJS is not found! You need to install it first."
+  when: result.rc != 0
