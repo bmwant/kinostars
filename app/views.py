@@ -7,9 +7,9 @@ from flask import (render_template, request, g, redirect, session,
 from bson.objectid import ObjectId
 from app import db, redis_db
 from app import application as app
-from auxiliary import requires_auth
-from models import GameDAO
-from logic import get_answer, generate_game, get_level, check_answer
+from app.auxiliary import requires_auth
+from app.models import GameDAO
+from app.logic import get_answer, generate_game, get_level, check_answer
 
 
 @app.route('/all')

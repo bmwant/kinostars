@@ -6,6 +6,8 @@ import time
 from flask import Blueprint
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 kinopoisk_agent = Blueprint('kinopoisk_agent', __name__,
@@ -38,6 +40,18 @@ def _change_update_status(status):
     return result.modified_count
 
 
+def setup_capabilities():
+    capabilities = DesiredCapabilities.PHANTOMJS.copy()
+    proxy = Proxy()
+    proxy.proxy_type = ProxyType.MANUAL
+    proxy.http_proxy = '1.0.0.25:80'
+    # prox.socks_proxy = "ip_addr:port"
+    # prox.ssl_proxy = "ip_addr:port"
+    proxy.add_to_capabilities(capabilities)
+
+    return capabilities
+
+
 @kinopoisk_agent.route('/grab')
 @requires_auth
 def grab_to_mongo():
@@ -46,7 +60,7 @@ def grab_to_mongo():
     write them to mongo database
     """
     app.logger.debug('Initializing web driver')
-    driver = webdriver.PhantomJS()
+    driver = webdriver.PhantomJS(desired_capabilities=setup_capabilities())
     _change_update_status(True)
     driver.get('http://kinopoisk.ru/login/')
     driver.switch_to_frame('kp2-authapi-iframe')
