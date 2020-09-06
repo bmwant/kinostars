@@ -23,3 +23,10 @@ $ cp creds.yml.example creds.yml
 $ brew cask install phantomjs
 $ python grab.py
 ```
+
+### Run React Native app
+
+```bash
+$ npm start
+$ npx react-native run-ios
+```
