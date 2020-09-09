@@ -21,18 +21,18 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const levels = [{
   options: ['Some name', 'Name Surname', 'Another name', 'Last name'],
   answer: 'Name Surname',
-  image: '5.jpg'
+  image: require('./5.jpg'),
 },
 {
-  options: ['Some name', 'Name Surname', 'Another name', 'Last name'],
-  answer: 'Name Surname',
-  image: '5.jpg'
+  options: ['Some name 2', 'Name Surname 2', 'Another name 2', 'Last name 2'],
+  answer: 'Name Surname 2',
+  image: require('./58.jpg'),
 }];
 
 class Guess extends Component {
   state = {
     level: 0,
-    image: '',
+    image: null,
     options: [],
     answer: '',
     buttons: [],
@@ -79,6 +79,7 @@ class Guess extends Component {
   loadStar(levelIndex) {
     const options = levels[levelIndex].options;
     const answer = levels[levelIndex].answer;
+    const image = levels[levelIndex].image;
     buttons = options.map(choice => (
       <Button
         title={choice}
@@ -89,6 +90,7 @@ class Guess extends Component {
       />)
     );
     this.setState({
+      image: image,
       answer: answer,
       buttons: buttons
     });
@@ -117,7 +119,7 @@ class Guess extends Component {
       <>
         <Image
           style={{width: 360}}
-          source={require('./5.jpg')}
+          source={this.state.image}
         />
         {this.state.buttons}
       </>
