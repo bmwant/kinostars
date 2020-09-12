@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>395362654201-nodk4jj67e2h902oucitqn1e3efk4qmt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.395362654201-nodk4jj67e2h902oucitqn1e3efk4qmt</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCFdWf1g_2-Q3V_iOBBxUisbL24j_YP1Zs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>395362654201</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.kinostars</string>
+	<key>PROJECT_ID</key>
+	<string>kinostars-96deb</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kinostars-96deb.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:395362654201:ios:f544a6857ab28d5cad0f28</string>
+	<key>DATABASE_URL</key>
+	<string>https://kinostars-96deb.firebaseio.com</string>
+</dict>
+</plist>
