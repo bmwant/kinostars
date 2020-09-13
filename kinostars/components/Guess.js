@@ -19,6 +19,7 @@ import firestore from '@react-native-firebase/firestore';
 class Guess extends Component {
   state = {
     level: 0,
+    errors: 0,
     stars: [],
     image: null,
     options: [],
@@ -133,12 +134,14 @@ class Guess extends Component {
   }
 
   render(props) {
+    const current = this.state.level+1;
+    const total = this.state.stars.length;
     return (
       <View style={styles.mainView}>
         <Header
           leftComponent={{ icon: 'menu', color: '#fff' }}
-          centerComponent={{ text: '17/342', style: { color: '#fff' } }}
-          rightComponent={{ text: '5', style: {color: '#fff' } }}
+          centerComponent={{ text: `${current}/${total}`, style: { color: '#fff' } }}
+          rightComponent={{ text: `${this.state.errors}`, style: {color: '#fff' } }}
         />
         <View style={styles.imageContainer}>
           <Image
