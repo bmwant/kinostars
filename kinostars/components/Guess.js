@@ -27,6 +27,14 @@ class Guess extends Component {
     buttons: [],
   };
 
+  returnLevel = () => {
+    return `${this.state.level}/${this.state.stars.length}`
+  }
+
+  returnErrors() {
+    return `${this.state.errors}`
+  }
+
   generateOptions(star) {
     const totalOptions = 4;
     const similarStars = this.state.stars.filter(e =>
@@ -117,7 +125,8 @@ class Guess extends Component {
       answer: answer,
       buttons: buttons
     });
-
+    // Rerender parent as we want to access updated child data via ref
+    this.props.rerender();
   }
 
   nextLevel() {
@@ -144,11 +153,6 @@ class Guess extends Component {
     const total = this.state.stars.length;
     return (
       <View style={styles.mainView}>
-        <Header
-          leftComponent={{ icon: 'menu', color: '#fff' }}
-          centerComponent={{ text: `${current}/${total}`, style: { color: '#fff' } }}
-          rightComponent={{ text: `${this.state.errors}`, style: {color: '#fff' } }}
-        />
         <View style={styles.imageContainer}>
           <Image
             style={[{width: 240, height: 360}, styles.image]}

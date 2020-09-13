@@ -1,10 +1,11 @@
+import { UniqueFieldDefinitionNamesRule } from 'graphql';
 /**
  *
  * @format
  * @flow strict-local
  */
 
-import React, {Component, useState} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -17,46 +18,68 @@ import {
 import {
   Header,
   ListItem,
+  BottomSheet,
 } from 'react-native-elements';
 import Animated from 'react-native-reanimated';
-import RBSheet from "react-native-raw-bottom-sheet";
-import BottomSheet from 'reanimated-bottom-sheet';
 import Guess from './components/Guess';
 
 
-const App = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  const list = [
-    { title: 'List Item 1' },
-    { title: 'List Item 2' },
-    {
-      title: 'Cancel',
-      containerStyle: { backgroundColor: 'red' },
-      titleStyle: { color: 'white' },
-      onPress: () => setIsVisible(false),
-    },
-  ];
-  const renderContent = () => (
-    <View
-      style={{
-        backgroundColor: 'papayawhip',
-        padding: 16,
-        height: 400,
-      }}
-    >
-      <Text>Swipe down to close</Text>
-    </View>
-  );
-  const sheetRef = React.useRef(null);
-  const refRBSheet = React.useRef();
-  return (
-    <>
-      <StatusBar backgroundColor="green" barStyle="dark-content" />
-      <SafeAreaView>
-          <Guess />
-      </SafeAreaView>
-    </>
-  );
+class App extends Component {
+  state = {
+    isVisible: false
+  }
+
+  constructor(props) {
+    super();
+    this.guessRef = React.createRef();
+    this.rerenderParentCallback = this.rerenderParentCallback.bind(this);
+  }
+
+  rerenderParentCallback() {
+    this.forceUpdate();
+  }
+
+  render(props) {
+    const list = [
+      { title: 'New game' },
+      { title: 'Leaderboard' },
+      {
+        title: 'Cancel',
+        containerStyle: { backgroundColor: 'red' },
+        titleStyle: { color: 'white' },
+        onPress: () => this.setState({isVisible: false}),
+      },
+    ];
+    let currentLevel = '';
+    let currentErrors = '';
+    if(this.guessRef.current !== null) {
+      currentLevel = this.guessRef.current.returnLevel();
+      currentErrors = this.guessRef.current.returnErrors();
+    }
+
+    return (
+      <>
+        <StatusBar backgroundColor="green" barStyle="dark-content" />
+        <SafeAreaView>
+          <Header
+            leftComponent={{ icon: 'menu', color: '#fff', onPress: () => this.setState({isVisible: true}) }}
+            centerComponent={{ text: `${currentLevel}`, style: { color: '#fff' } }}
+            rightComponent={{ text: `${currentErrors}`, style: {color: '#fff' } }}
+          />
+          <Guess ref={this.guessRef} rerender={this.rerenderParentCallback}/>
+          <BottomSheet isVisible={this.state.isVisible}>
+            {list.map((l, i) => (
+              <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
+                <ListItem.Content>
+                  <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+                </ListItem.Content>
+              </ListItem>
+            ))}
+          </BottomSheet>
+        </SafeAreaView>
+      </>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -64,6 +87,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginRight: 10,
+  },
+  containerStyle: {
+
   }
 });
 
