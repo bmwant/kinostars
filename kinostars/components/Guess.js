@@ -1,38 +1,55 @@
 import React, {Component} from 'react';
+import _, { shuffle, random } from 'underscore';
 import {
   Alert,
   Image,
   View,
   StyleSheet
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import {
+  Header,
+  Button,
+} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
-const reference = storage().ref('/images/5.jpg');
-
-const levels = [{
-  options: ['Some name', 'Name Surname', 'Another name', 'Last name'],
-  answer: 'Name Surname',
-  image: reference,
-},
-{
-  options: ['Some name 2', 'Name Surname 2', 'Another name 2', 'Last name 2'],
-  answer: 'Name Surname 2',
-  image: reference,
-}];
 
 class Guess extends Component {
   state = {
     level: 0,
+    stars: [],
     image: null,
     options: [],
     answer: '',
     buttons: [],
   };
+
+  generateOptions(star) {
+    const totalOptions = 4;
+    const similarStars = this.state.stars.filter(e =>
+      e.category === star.category && e.name !== star.name
+    );
+    var options = shuffle(similarStars)
+      .slice(0, totalOptions)
+      .map(e => e.name);
+    options.splice(random(0, totalOptions-1), 1, star.name);
+    return options;
+  }
+
+  async loadStars() {
+    let stars = [];
+    const starsData = await firestore()
+      .collection('stars')
+      .get();
+    starsData.forEach((elem) => {
+      stars.push(elem.data());
+    });
+    this.setState({
+      stars: shuffle(stars)
+    });
+  }
 
   checkOption(event, optionSelected) {
     // Alert.alert('Calling my function')
@@ -72,17 +89,12 @@ class Guess extends Component {
     setTimeout(() => {this.nextLevel()}, 1000)
   };
 
-  async loadStar(levelIndex) {
-    const options = levels[levelIndex].options;
-    const answer = levels[levelIndex].answer;
-    const imageRef = levels[levelIndex].image;
+  async loadLevel(levelIndex) {
+    const star = this.state.stars[levelIndex];
+    const options = this.generateOptions(star);
+    const answer = star.name;
+    const imageRef = storage().ref(`/images/${star.starId}.jpg`);
     const image = await imageRef.getDownloadURL();
-    const stars = await firestore()
-    .collection('stars')
-    .get();
-    stars.forEach((elem) => {
-      console.log(elem.data());
-    })
     // console.log('This is image', image);
     buttons = options.map(choice => (
       <Button
@@ -103,7 +115,8 @@ class Guess extends Component {
 
   nextLevel() {
     const newLevel = this.state.level + 1;
-    if(newLevel >= levels.length) {
+    const totalLevels = this.state.stars.length;
+    if(newLevel >= totalLevels) {
       Alert.alert('End of the game');
       return
     }
@@ -111,20 +124,28 @@ class Guess extends Component {
     this.setState({
       level: newLevel
     });
-    this.loadStar(newLevel);
+    this.loadLevel(newLevel);
   }
 
   async componentDidMount() {
-    await this.loadStar(this.state.level);
+    await this.loadStars();
+    await this.loadLevel(this.state.level);
   }
 
   render(props) {
     return (
-      <View style={styles.imageContainer}>
-        <Image
-          style={[{width: 360, height: 570}, styles.image]}
-          source={{uri: this.state.image}}
+      <View style={styles.mainView}>
+        <Header
+          leftComponent={{ icon: 'menu', color: '#fff' }}
+          centerComponent={{ text: '17/342', style: { color: '#fff' } }}
+          rightComponent={{ text: '5', style: {color: '#fff' } }}
         />
+        <View style={styles.imageContainer}>
+          <Image
+            style={[{width: 240, height: 360}, styles.image]}
+            source={{uri: this.state.image}}
+          />
+        </View>
         {this.state.buttons}
       </View>
     );
@@ -132,13 +153,20 @@ class Guess extends Component {
 }
 
 const styles = StyleSheet.create({
+  mainView: {
+    // padding: 20,
+  },
   button: {
-    marginTop: 5,
+    marginTop: 3,
     marginLeft: 10,
     marginRight: 10,
   },
   imageContainer: {
-    // flex: 1
+    marginTop: 10,
+    marginBottom: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     borderRadius: 15,

@@ -172,4 +172,4 @@ dist
 .vscode-test
 images/*.jpg
 .DS_Store
-./kinostars-firebase-admin.json
+kinostars-firebase-admin.json

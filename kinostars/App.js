@@ -15,6 +15,7 @@ import {
   Alert,
 } from 'react-native';
 import {
+  Header,
   ListItem,
 } from 'react-native-elements';
 import Animated from 'react-native-reanimated';
@@ -50,27 +51,9 @@ const App = () => {
   const refRBSheet = React.useRef();
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar backgroundColor="green" barStyle="dark-content" />
       <SafeAreaView>
-        <View
-          style={{
-            padding: 20
-          }}>
           <Guess />
-        </View>
-        <RBSheet
-        ref={refRBSheet}
-        closeOnDragDown={true}
-        closeOnPressMask={false}
-        customStyles={{
-          wrapper: {
-            backgroundColor: "transparent"
-          },
-          draggableIcon: {
-            backgroundColor: "#000"
-          }
-        }}
-      />
       </SafeAreaView>
     </>
   );

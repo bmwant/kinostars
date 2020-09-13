@@ -30,3 +30,9 @@ $ python grab.py
 $ npm start
 $ npx react-native run-ios
 ```
+
+### Xcode hints
+
+```bash
+$ xcrun simctl list devices
+```
