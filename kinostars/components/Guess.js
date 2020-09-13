@@ -4,7 +4,9 @@ import {
   Alert,
   Image,
   View,
-  StyleSheet
+  StyleSheet,
+  PanResponder,
+  Animated,
 } from 'react-native';
 import {
   Header,
@@ -25,7 +27,24 @@ class Guess extends Component {
     options: [],
     answer: '',
     buttons: [],
+    pan: new Animated.ValueXY(),
   };
+
+  constructor(props) {
+    super();
+    const moveEvent = Animated.event([
+      null, {dx: this.state.pan.x, dy: this.state.pan.y},
+    ], {useNativeDriver: false});
+    const releaseEvent = Animated.spring(this.state.pan, {
+      toValue: {x: 0, y: 0},
+      useNativeDriver: false,
+    });
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: moveEvent,
+      onPanResponderRelease: () => releaseEvent.start(),
+    });
+  }
 
   returnLevel = () => {
     return `${this.state.level}/${this.state.stars.length}`
@@ -153,12 +172,20 @@ class Guess extends Component {
     const total = this.state.stars.length;
     return (
       <View style={styles.mainView}>
-        <View style={styles.imageContainer}>
+        <Animated.View
+          style={[styles.imageContainer,
+            {transform: [
+              { translateX: this.state.pan.x },
+              { translateY: this.state.pan.y }
+            ]}
+          ]}
+          {...this._panResponder.panHandlers}
+        >
           <Image
             style={[{width: 240, height: 360}, styles.image]}
             source={{uri: this.state.image}}
           />
-        </View>
+        </Animated.View>
         {this.state.buttons}
       </View>
     );
@@ -167,7 +194,6 @@ class Guess extends Component {
 
 const styles = StyleSheet.create({
   mainView: {
-    // padding: 20,
   },
   button: {
     marginTop: 3,
