@@ -56,9 +56,14 @@ class Guess extends Component {
     // Alert.alert('Calling my function')
     this.setState((state) => {
       let newButtons = [];
+      let errors = state.errors;
       state.buttons.forEach((button) => {
         if(button.props.title === optionSelected) {
-          const icon = optionSelected === state.answer ? 'check-circle' : 'times-circle';
+          let icon = 'check-circle';
+          if(optionSelected !== state.answer) {
+            icon = 'times-circle';
+            errors++;
+          }
           const selectedButton = (<Button
             title={optionSelected}
             key={optionSelected}
@@ -83,11 +88,12 @@ class Guess extends Component {
           newButtons.push(disabledButton);
         }
       });
+      state.errors = errors;
       state.buttons = newButtons;
       return state;
     });
     // Add transition animation
-    setTimeout(() => {this.nextLevel()}, 1000)
+    setTimeout(() => {this.nextLevel()}, 800)
   };
 
   async loadLevel(levelIndex) {
